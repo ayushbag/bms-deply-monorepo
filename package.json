@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "deploy_monorepo",
   "private": true,
   "scripts": {
     "build": "turbo run build",
