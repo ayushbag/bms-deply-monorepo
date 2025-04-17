@@ -1,0 +1,23 @@
+name: Continuous Deployment to Staging
+on: 
+    push:
+        branches: 
+           - "main"
+
+jobs: 
+    redeploy_everything:
+        name: Deploying everything to staging cluster
+        runs-on: ubuntu-latest
+        
+        steps: 
+            - name: SSH Into Server
+              run: |
+                echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+                chmod 600 ~/ssh_key
+                ssh -i ~/ssh_key ubuntu@47.129.243.82
+                cd bms-deply-monorepo/ && git pull
+                pnpm install
+                pnpm run build
+                pm2 restart fe
+                pm2 restart http-server
+                pm2 restart ws-server
