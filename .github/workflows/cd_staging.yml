@@ -11,7 +11,8 @@ jobs:
         steps:
             - run: |
                 echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-                echo "${{ secrets.KNOWN_HOSTS }}" &> .ssh/known_hosts
+                mkdit ~/.ssh/known_hosts
+                echo "${{ secrets.KNOWN_HOSTS }}" &> ~/.ssh/known_hosts
                 ssh -i ~/ssh_key ubuntu@47.129.243.82
                 cd bms-deply-monorepo/ && git pull
                 pnpm install
