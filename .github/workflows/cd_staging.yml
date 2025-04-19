@@ -17,7 +17,7 @@ jobs:
                 echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
                 chmod 600 ~/ssh_key
                 chmod 644 ~/.ssh/known_hosts
-                ssh -i ~/ssh_key ubuntu@47.129.243.82 -t "source ~/.nvm/nvm.sh
+                ssh -i ~/ssh_key ubuntu@47.129.243.82 "source ~/.nvm/nvm.sh
                 nvm use 22.13.1
                 cd bms-deply-monorepo/
                 git pull origin main
