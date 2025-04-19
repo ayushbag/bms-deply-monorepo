@@ -17,5 +17,15 @@ jobs:
                 echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
                 chmod 600 ~/ssh_key
                 chmod 644 ~/.ssh/known_hosts
-                ssh -i ~/ssh_key ubuntu@47.129.243.82 -t "cd bms-deply-monorepo/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart fe-sever && pm2 restart http-sever && pm2 restart ws-sever"
+                ssh -i ~/ssh_key ubuntu@47.129.243.82 -t "source ~/.nvm/nvm.sh
+                nvm use 22.13.1
+                cd bms-deply-monorepo/
+                git pull origin main
+                npm install -g pnpm
+                pnpm install
+                pnpm run build
+                pm2 restart fe-sever
+                pm2 restart http-sever
+                pm2 restart ws-sever
+                "
 
