@@ -1,20 +1,33 @@
 name: Continuous Deployment to Staging
+
 on: 
-    push:
-        branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs: 
-    redeploy_everything:
-        name: Deploying everything to staging cluster
-        runs-on: ubuntu-latest
-        
-        steps:
-            - run: |
-                echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-                mkdir -p ~/home/runner/.ssh
-                ls ~/home/runner/.ssh
-                touch ~/home/runner/.ssh/known_hosts
-                echo "${{ secrets.KNOWN_HOSTS }}" &> ~/home/runner/.ssh/known_hosts
-                chmod 700 /home/runner/ssh_key
-                ssh -i ~/ssh_key ubuntu@47.129.243.82 -t "cd bms-deply-monorepo/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install-g pnpm && pnpm install && pnpm run build && pm2 restart fe && pm2 restart http-server && pm2 restart ws-server"
+  redeploy_everything:
+    name: Deploying everything to staging cluster
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Create SSH key and known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to staging server
+        run: |
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes ubuntu@47.129.243.82 "
+            export PATH=/root/.nvm/versions/node/v22.13.1/bin:\$PATH &&
+            cd bms-deply-monorepo/ &&
+            git pull origin main &&
+            npm install -g pnpm &&
+            pnpm install &&
+            pnpm run build &&
+            pm2 restart fe &&
+            pm2 restart http-server &&
+            pm2 restart ws-server
+          "
